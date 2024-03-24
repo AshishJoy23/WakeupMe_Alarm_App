@@ -1,7 +1,6 @@
 
 import 'package:alarm_app_test/services/notification_services.dart';
 import 'package:alarm_app_test/view/home/home_screen.dart';
-import 'package:alarm_app_test/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,7 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: AlarmScreen(),
+      home: HomeScreen(),
     );
   }
 }
