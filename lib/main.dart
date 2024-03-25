@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalNotifications.init();
+  await LocalNotifications.initializeNotification();
   runApp(MyApp());
 }
 

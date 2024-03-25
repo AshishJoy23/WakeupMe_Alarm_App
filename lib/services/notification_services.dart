@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:alarm_app_test/model/alarm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -8,12 +9,12 @@ import 'package:timezone/timezone.dart' as tz;
 import '../controller/alarm_controller.dart';
 
 class LocalNotifications {
-  final AlarmController alarmController = Get.put(AlarmController());
+  static final AlarmController alarmController = Get.put(AlarmController());
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
 // initialize the local notifications
-  static Future init() async {
+  static Future initializeNotification() async {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
         const AndroidInitializationSettings('alarm_icon');
@@ -43,12 +44,12 @@ class LocalNotifications {
       'wakeupme channel',
       channelDescription: 'Channel for Alarm Notification',
       icon: 'alarm_icon',
-      sound: RawResourceAndroidNotificationSound('a_long_cold_sting'),
+      sound: RawResourceAndroidNotificationSound('twirling_alarm_tone'),
       largeIcon: DrawableResourceAndroidBitmap('alarm_icon'),
     );
 
     var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
-      sound: 'a_long_cold_sting.wav',
+      sound: 'twirling_alarm_tone.wav',
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -67,20 +68,21 @@ class LocalNotifications {
   }
 
   // to schedule a local notification
-   Future showScheduleNotification(
-      DateTime scheduledNotificationDateTime, String title,
-      {required int id,required bool isRepeating}) async {
+  static Future showScheduleNotification(DateTime scheduledNotificationDateTime,
+      String title, AlarmInfoModel alarm,
+      {required int id, required bool isRepeating}) async {
+    log('noti triger');
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'channel 2',
       'wakeupme channel',
       channelDescription: 'Channel for Alarm Notification',
       icon: 'alarm_icon',
-      sound: RawResourceAndroidNotificationSound('a_long_cold_sting'),
+      sound: RawResourceAndroidNotificationSound('twirling_alarm_tone'),
       largeIcon: DrawableResourceAndroidBitmap('alarm_icon'),
     );
 
     var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
-      sound: 'a_long_cold_sting.wav',
+      sound: 'twirling_alarm_tone.wav',
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -101,12 +103,18 @@ class LocalNotifications {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+
     if (isRepeating) {
-      showPeriodicNotifications(id: id,title: title);
-    }else{
-      var alarm = alarmController.alarmList.firstWhere((element) => element.id == id);
-      alarm.isActive = false;
-      alarmController.updateAlarm(alarm);
+      showPeriodicNotifications(id: id, title: title);
+    } else {
+      Future.delayed(scheduledNotificationDateTime.difference(DateTime.now()),
+          () {
+        // After waiting for the specified duration, call the function
+        alarm.id = id;
+        alarm.isActive = false;
+        alarmController.updateAlarm(alarm);
+        log('waited some minutes');
+      });
     }
   }
 

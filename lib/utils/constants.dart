@@ -7,14 +7,10 @@ class CustomColors {
   static Color dividerColor = Colors.black45;
   static Color pageBackgroundColor = const Color.fromARGB(255, 251, 250, 249);
   static List<Color> mango = [const Color(0xFFFFA738), const Color(0xFFFFE130)];
-
-  static Color clockBG = const Color(0xFF444974);
-  static Color clockOutline = const Color(0xFFEAECFF);
-  static Color? secHandColor = Colors.orange[300];
-  static Color minHandStatColor = const Color(0xFF748EF6);
-  static Color minHandEndColor = const Color(0xFF77DDFF);
-  static Color hourHandStatColor = const Color(0xFFC279FB);
-  static Color hourHandEndColor = const Color(0xFFEA74AB);
+  static List<Color> mangoDim = [
+    const Color(0xFFFFA738).withAlpha(80),
+    const Color(0xFFFFE130).withAlpha(80)
+  ];
 }
 
 class GradientColors {
@@ -30,15 +26,3 @@ class GradientColors {
   static List<Color> mango = [const Color(0xFFFFA738), const Color(0xFFFFE130)];
   static List<Color> fire = [const Color(0xFFFF5DCD), const Color(0xFFFF8484)];
 }
-
-class GradientTemplate {
-  static List<GradientColors> gradientTemplate = [
-    GradientColors(GradientColors.sky),
-    GradientColors(GradientColors.sunset),
-    GradientColors(GradientColors.sea),
-    GradientColors(GradientColors.mango),
-    GradientColors(GradientColors.fire),
-  ];
-}
-
-

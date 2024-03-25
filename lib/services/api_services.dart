@@ -8,12 +8,22 @@ class FetchWeatherAPI {
   WeatherDataModel? weatherData;
 
   //processing the weather data from response -> to json
-  Future<WeatherDataModel> processData(lat, long) async {
-    var response = await http.get(Uri.parse(apiURL(lat, long)));
-    var jsonString = jsonDecode(response.body);
-    weatherData = WeatherDataModel.fromJson(jsonString);
-    log(response.statusCode.toString());
-    log(response.body.toString());
-    return weatherData!;
+  Future<WeatherDataModel?> processData(lat, long) async {
+    try {
+      var response = await http.get(Uri.parse(apiURL(lat, long)));
+      if (response.statusCode==200) {
+        var jsonString = jsonDecode(response.body);
+        log(response.body.toString());
+      weatherData = WeatherDataModel.fromJson(jsonString);
+      return weatherData!;
+      } else {
+        log('Erorr: ${response.statusCode}');
+        return null;
+      }
+      
+    } catch (e) {
+      log('Error: $e');
+      return null;
+    }
   }
 }

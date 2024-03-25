@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:alarm_app_test/model/alarm_model.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -74,8 +76,11 @@ class SqfliteServices {
   }
 
   Future<int> update(AlarmInfoModel alarmInfo) async {
+    log('updat');
     var db = await this.database;
-    return await db.update(tableAlarm, alarmInfo.toMap(),
+    var result = await db.update(tableAlarm, alarmInfo.toMap(),
         where: '$columnId = ?', whereArgs: [alarmInfo.id]);
+    print('result : $result');
+    return result;
   }
 }

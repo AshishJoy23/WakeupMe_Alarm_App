@@ -37,7 +37,6 @@ class _WeatherDataWidgetState extends State<WeatherDataWidget> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-     final WeatherDataModel weatherData = globalController.getWeatherData();
     return Column(
       children: [
         Container(
@@ -66,41 +65,57 @@ class _WeatherDataWidgetState extends State<WeatherDataWidget> {
             ),
           ),
         ),
-        Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Image.asset(
-          "assets/weather/${weatherData.current!.weather![0].icon}.png",
-          height: size.height*0.1,
-          width: size.height*0.1,
-        ),
-        Container(
-          height: size.height*0.08,
-          width: 1,
-          color: Colors.black45,
-        ),
-        RichText(
-          text: TextSpan(children: [
-            TextSpan(
-              text: "${weatherData.current!.temp!.toInt()}°",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 50,
-                color: CustomColors.secondaryTextColor,
+        Obx(
+          ()=> Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+          Image.asset(
+            "assets/weather/${globalController.weatherData.value.current!.weather![0].icon}.png",
+            height: size.height*0.1,
+            width: size.height*0.1,
+            errorBuilder: (context, error, stackTrace) {
+              return Center(
+                child: InkWell(
+                  onTap: () {
+                    globalController.getCurrentLocation();
+                  },
+                  child: Icon(
+                        Icons.refresh,
+                        color: Colors.black54,
+                        size: 40,
+                      ),
+                ),
+              );
+            },
+          ),
+          Container(
+            height: size.height*0.08,
+            width: 1,
+            color: Colors.black45,
+          ),
+          RichText(
+            text: TextSpan(children: [
+              TextSpan(
+                text: "${globalController.weatherData.value.current!.temp!.toInt()}°",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 50,
+                  color: CustomColors.secondaryTextColor,
+                ),
               ),
-            ),
-            TextSpan(
-              text: "${weatherData.current!.weather![0].description}",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: CustomColors.secondaryTextColor.withAlpha(220),
+              TextSpan(
+                text: "${globalController.weatherData.value.current!.weather![0].description}",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: CustomColors.secondaryTextColor.withAlpha(220),
+                ),
               ),
-            ),
-          ]),
-        ),
-      ],
-    )
+            ]),
+          ),
+                ],
+              ),
+        )
       ],
     );
   }

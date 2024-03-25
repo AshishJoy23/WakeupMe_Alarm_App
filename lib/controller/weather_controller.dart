@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:alarm_app_test/model/weather_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:timezone/timezone.dart';
 
 import '../services/api_services.dart';
 
@@ -9,7 +11,7 @@ class WeatherController extends GetxController {
   final RxBool _isLoading = true.obs;
   final RxDouble _latitude = 0.0.obs;
   final RxDouble _longitude = 0.0.obs;
-  final RxInt _currentIndex = 0.obs;
+  var isError = false.obs;
 
   final weatherData = WeatherDataModel().obs;
 
@@ -17,21 +19,19 @@ class WeatherController extends GetxController {
   RxBool checkLoading() => _isLoading;
   RxDouble getLatitude() => _latitude;
   RxDouble getLongitude() => _longitude;
-  WeatherDataModel getWeatherData(){
+  WeatherDataModel getWeatherData() {
     return weatherData.value;
   }
 
   @override
   void onInit() {
     if (_isLoading.isTrue) {
-      getLocation();
-    } else{
-      getIndex();
+      getPermission();
     }
     super.onInit();
   }
 
-  getLocation() async {
+  getPermission() async {
     bool isServiceEnabled;
     LocationPermission locationPermission;
 
@@ -54,24 +54,57 @@ class WeatherController extends GetxController {
         return Future.error('Location Permission is denied');
       }
     }
+    getCurrentLocation();
+  }
 
-    //update the current location by giving the latitude and longitude
+  getCurrentLocation() async {
+//update the current location by giving the latitude and longitude
     return await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high)
-        .then((value) {
+        .then((value) async {
       //update our latitude and longitude
       _latitude.value = value.latitude;
       _longitude.value = value.longitude;
-      //calling our weather api
-      return FetchWeatherAPI().processData(value.latitude, value.longitude).then((value) {
-        weatherData.value = value;
-         _isLoading.value = false;
+      // Check for internet connectivity
+      bool isConnected = await isInternetConnected();
+      if (isConnected) {
+        // Fetch latest data if online
+        //calling our weather api
+        return FetchWeatherAPI()
+            .processData(value.latitude, value.longitude)
+            .then((value) {
+          if (value == null) {
+            isError.value = true;
+            _isLoading.value = false;
+            return Future.error('Something went wrong');
+          }
+          weatherData.value = value;
+          _isLoading.value = false;
+        });
+      } else {
+        weatherData.value = WeatherDataModel(
+          current: CurrentData(
+            temp: 0,
+            weather: [
+              WeatherData(description: 'You are offline', icon: ''),
+            ],
+          ),
+        );
+        _isLoading.value = false;
       }
-     );
     });
   }
-  
-  RxInt getIndex() {
-    return _currentIndex;
+
+  Future<bool> isInternetConnected() async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true; // Internet connection available
+      } else {
+        return false; // No internet connection
+      }
+    } on SocketException catch (_) {
+      return false; // No internet connection
+    }
   }
 }

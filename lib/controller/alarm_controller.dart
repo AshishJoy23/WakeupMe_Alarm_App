@@ -36,7 +36,7 @@ class AlarmController extends GetxController {
   }
 
   Future<int> updateAlarm(AlarmInfoModel alarmInfo) async {
-    final response = await SqfliteServices().insertAlarm(alarmInfo);
+    final response = await SqfliteServices().update(alarmInfo);
     fetchAllAlarms();
     return response;
   }
