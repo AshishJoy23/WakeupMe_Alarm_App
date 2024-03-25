@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:alarm_app_test/model/weather_model.dart';
-import 'package:alarm_app_test/utils/api_endpoints.dart';
+import 'package:alarm_app_test/model/models.dart';
+import 'package:alarm_app_test/utils/utils.dart';
 
 class FetchWeatherAPI {
   WeatherDataModel? weatherData;

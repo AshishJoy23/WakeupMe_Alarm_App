@@ -1,17 +1,23 @@
-
-import 'package:alarm_app_test/services/notification_services.dart';
-import 'package:alarm_app_test/view/home/home_screen.dart';
+import 'dart:developer';
+import 'package:alarm_app_test/controller/controllers.dart';
+import 'package:alarm_app_test/services/services.dart';
+import 'package:alarm_app_test/view/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+final WeatherController weatherController = Get.put(WeatherController());
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalNotifications.initializeNotification();
-  runApp(MyApp());
+  log('main call');
+  await LocalNotifications.requestNotificationPermission();
+  await weatherController.getPermission();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -21,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }

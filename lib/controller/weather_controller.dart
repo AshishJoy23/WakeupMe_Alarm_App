@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'package:alarm_app_test/model/weather_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:timezone/timezone.dart';
-
-import '../services/api_services.dart';
+import 'package:alarm_app_test/services/services.dart';
+import 'package:alarm_app_test/model/models.dart';
 
 class WeatherController extends GetxController {
   //create variables
@@ -31,15 +29,21 @@ class WeatherController extends GetxController {
     super.onInit();
   }
 
-  getPermission() async {
+  Future<void> getPermission() async {
     bool isServiceEnabled;
     LocationPermission locationPermission;
 
     isServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
-    //return if service is not enabled
     if (!isServiceEnabled) {
-      return Future.error('Location is not enabled');
+      // Location service is disabled, prompt the user to enable it
+      await Geolocator.openLocationSettings();
+      // Wait for the user to enable location services
+      isServiceEnabled = await Geolocator.isLocationServiceEnabled();
+      // If the user didn't enable location services, throw an error
+      if (!isServiceEnabled) {
+        throw Exception('Location is not enabled');
+      }
     }
 
     //status of permission
@@ -57,7 +61,7 @@ class WeatherController extends GetxController {
     getCurrentLocation();
   }
 
-  getCurrentLocation() async {
+  Future<void> getCurrentLocation() async {
 //update the current location by giving the latitude and longitude
     return await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high)

@@ -1,6 +1,5 @@
 import 'dart:developer';
-
-import 'package:alarm_app_test/model/alarm_model.dart';
+import 'package:alarm_app_test/model/models.dart';
 import 'package:sqflite/sqflite.dart';
 
 const String tableAlarm = 'alarm';

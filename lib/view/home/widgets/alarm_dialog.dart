@@ -2,15 +2,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../../../controller/alarm_controller.dart';
-import '../../../model/alarm_model.dart';
-import '../../../services/notification_services.dart';
-import '../../../utils/constants.dart';
+import 'package:alarm_app_test/controller/controllers.dart';
+import 'package:alarm_app_test/services/services.dart';
+import 'package:alarm_app_test/model/models.dart';
+import 'package:alarm_app_test/utils/utils.dart';
 
 class AlarmDialogWidget extends StatefulWidget {
   final AlarmInfoModel? alarmInfo;
-  AlarmDialogWidget({
+  const AlarmDialogWidget({
     super.key,
     this.alarmInfo,
   });
@@ -29,7 +28,8 @@ class _AlarmDialogWidgetState extends State<AlarmDialogWidget> {
   TimeOfDay? selectedTime;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     if (widget.alarmInfo != null) {
       textController.text = widget.alarmInfo!.title!;
       selectedDateTime = widget.alarmInfo!.alarmDateTime!;
@@ -37,6 +37,10 @@ class _AlarmDialogWidgetState extends State<AlarmDialogWidget> {
           DateFormat('hh:mm aa').format(widget.alarmInfo!.alarmDateTime!);
       alarmController.isRepeat.value = widget.alarmInfo!.isRepeating!;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setModalState) {
       return Container(
         padding: const EdgeInsets.all(32),
@@ -134,16 +138,18 @@ class _AlarmDialogWidgetState extends State<AlarmDialogWidget> {
                 style: ButtonStyle(
                     backgroundColor:
                         MaterialStatePropertyAll(CustomColors.primaryColor)),
-                onPressed: () {
+                onPressed: () async {
                   if (textController.text.isEmpty) {
                     Get.snackbar('Alarm Label is required', '');
                   } else if (selectedTime == null) {
                     Get.snackbar('Choose a time foe alarm', '');
                   } else {
-                    onSaveAlarm(context);
+                    await onSaveAlarm(context);
                     Navigator.pop(context);
                     textController.clear();
                     alarmController.isRepeat.value = false;
+                    log('in button fn');
+                    log('${alarmController.isRepeat.value}');
                   }
                 },
                 child: Text(
@@ -162,7 +168,7 @@ class _AlarmDialogWidgetState extends State<AlarmDialogWidget> {
     });
   }
 
-  void onSaveAlarm(BuildContext context) async {
+  Future<void> onSaveAlarm(BuildContext context) async {
     DateTime? scheduleAlarmDateTime;
     if (selectedDateTime.isAfter(DateTime.now())) {
       scheduleAlarmDateTime = selectedDateTime;
@@ -202,5 +208,7 @@ class _AlarmDialogWidgetState extends State<AlarmDialogWidget> {
         isRepeating: alarmController.isRepeat.value,
       );
     }
+    log('in save fn');
+    log('${alarmController.isRepeat.value}');
   }
 }

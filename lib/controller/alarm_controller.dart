@@ -1,7 +1,6 @@
-import 'package:alarm_app_test/model/alarm_model.dart';
 import 'package:get/get.dart';
-
-import '../services/db_services.dart';
+import 'package:alarm_app_test/services/services.dart';
+import 'package:alarm_app_test/model/models.dart';
 
 class AlarmController extends GetxController {
   var isRepeat = false.obs;

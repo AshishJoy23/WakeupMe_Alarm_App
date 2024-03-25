@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../../../controller/alarm_controller.dart';
-import '../../../model/alarm_model.dart';
-import '../../../services/notification_services.dart';
-import '../../../utils/constants.dart';
+import 'package:alarm_app_test/controller/controllers.dart';
+import 'package:alarm_app_test/services/services.dart';
+import 'package:alarm_app_test/view/screens.dart';
+import 'package:alarm_app_test/model/models.dart';
+import 'package:alarm_app_test/utils/utils.dart';
 
 class AlarmListWidget extends StatelessWidget {
   final AlarmController alarmController;
@@ -26,7 +26,7 @@ class AlarmListWidget extends StatelessWidget {
         Text(
           'Alarms',
           style: TextStyle(
-              fontSize: 26,
+              fontSize: 22,
               fontWeight: FontWeight.w700,
               color: CustomColors.secondaryTextColor),
         ),

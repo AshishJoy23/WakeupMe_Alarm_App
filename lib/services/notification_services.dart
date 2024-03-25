@@ -5,16 +5,28 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-
-import '../controller/alarm_controller.dart';
+import 'package:alarm_app_test/controller/controllers.dart';
+import 'package:alarm_app_test/model/models.dart';
 
 class LocalNotifications {
   static final AlarmController alarmController = Get.put(AlarmController());
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+//request notification permission for Android 13 or greater
+  static Future requestNotificationPermission() async {
+    var isGranted = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestPermission();
+    if (isGranted!) {
+      await initializeNotification();
+    }
+  }
+
 // initialize the local notifications
   static Future initializeNotification() async {
+    log('called');
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
         const AndroidInitializationSettings('alarm_icon');
@@ -26,12 +38,14 @@ class LocalNotifications {
             (int id, String? title, String? body, String? payload) async {});
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String? payload) async {
+    var initilized = await flutterLocalNotificationsPlugin.initialize(
+        initializationSettings, onSelectNotification: (String? payload) async {
       if (payload != null) {
         debugPrint('notification payload: $payload');
+        log('<<<<<<<<<<<<<<<message>>>>>>>>>>>>>>>');
       }
     });
+    log('intaialzed $initilized');
   }
 
   // to show periodic notification at regular interval
@@ -44,12 +58,12 @@ class LocalNotifications {
       'wakeupme channel',
       channelDescription: 'Channel for Alarm Notification',
       icon: 'alarm_icon',
-      sound: RawResourceAndroidNotificationSound('twirling_alarm_tone'),
+      sound: RawResourceAndroidNotificationSound('new_alarm_tone'),
       largeIcon: DrawableResourceAndroidBitmap('alarm_icon'),
     );
 
     var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
-      sound: 'twirling_alarm_tone.wav',
+      sound: 'new_alarm_tone.wav',
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -62,7 +76,7 @@ class LocalNotifications {
       id,
       title,
       'You have a new alarm notification',
-      RepeatInterval.everyMinute,
+      RepeatInterval.daily,
       platformChannelSpecifics,
     );
   }
@@ -72,17 +86,18 @@ class LocalNotifications {
       String title, AlarmInfoModel alarm,
       {required int id, required bool isRepeating}) async {
     log('noti triger');
+    log('$isRepeating');
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'channel 2',
       'wakeupme channel',
       channelDescription: 'Channel for Alarm Notification',
       icon: 'alarm_icon',
-      sound: RawResourceAndroidNotificationSound('twirling_alarm_tone'),
+      sound: RawResourceAndroidNotificationSound('new_alarm_tone'),
       largeIcon: DrawableResourceAndroidBitmap('alarm_icon'),
     );
 
     var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
-      sound: 'twirling_alarm_tone.wav',
+      sound: 'new_alarm_tone.wav',
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -105,8 +120,10 @@ class LocalNotifications {
     );
 
     if (isRepeating) {
+      log('if triger');
       showPeriodicNotifications(id: id, title: title);
     } else {
+      log('elseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
       Future.delayed(scheduledNotificationDateTime.difference(DateTime.now()),
           () {
         // After waiting for the specified duration, call the function

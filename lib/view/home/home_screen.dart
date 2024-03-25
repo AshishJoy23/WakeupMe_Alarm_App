@@ -1,12 +1,10 @@
-import 'package:alarm_app_test/controller/alarm_controller.dart';
 import 'package:alarm_app_test/utils/constants.dart';
-import 'package:alarm_app_test/view/home/widgets/alarm_dialog.dart';
-import 'package:alarm_app_test/view/home/widgets/alarm_list.dart';
-import 'package:alarm_app_test/view/home/widgets/weather_data.dart';
+import 'package:alarm_app_test/controller/controllers.dart';
+import 'package:alarm_app_test/view/screens.dart';
+import 'package:alarm_app_test/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import '../../controller/weather_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -56,7 +54,8 @@ class HomeScreen extends StatelessWidget {
                     title: Text(
                       'WakeMe!Up',
                       style: TextStyle(
-                        fontSize: 24,
+                        letterSpacing: 1.5,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: CustomColors.secondaryTextColor,
                       ),
@@ -87,19 +86,23 @@ class HomeScreen extends StatelessWidget {
                           ),
                           Obx(() => alarmController.alarmList.isEmpty
                               ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  // mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
+                                    SizedBox(
+                                      height: size.height * 0.1,
+                                    ),
                                     Center(
                                       child: Image.asset(
                                         'assets/icons/empty_icon.png',
-                                        width: size.width * 0.7,
-                                        height: size.height * 0.3,
+                                        width: size.width * 0.5,
+                                        height: size.height * 0.2,
                                       ),
                                     ),
                                     Text(
                                       'No Alarms Found!',
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 20,
+                                        letterSpacing: 1.2,
                                         fontWeight: FontWeight.w700,
                                         color: CustomColors.secondaryTextColor,
                                       ),
