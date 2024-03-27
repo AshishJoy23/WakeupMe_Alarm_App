@@ -142,7 +142,7 @@ class _AlarmDialogWidgetState extends State<AlarmDialogWidget> {
                   if (textController.text.isEmpty) {
                     Get.snackbar('Alarm Label is required', '');
                   } else if (selectedTime == null) {
-                    Get.snackbar('Choose a time foe alarm', '');
+                    Get.snackbar('Choose a time for alarm', '');
                   } else {
                     await onSaveAlarm(context);
                     Navigator.pop(context);

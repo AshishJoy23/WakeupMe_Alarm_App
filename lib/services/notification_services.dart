@@ -18,7 +18,7 @@ class LocalNotifications {
     var isGranted = await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
+        ?.requestNotificationsPermission();
     if (isGranted!) {
       await initializeNotification();
     }
@@ -30,7 +30,7 @@ class LocalNotifications {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
         const AndroidInitializationSettings('alarm_icon');
-    var initializationSettingsIOS = IOSInitializationSettings(
+    var initializationSettingsIOS = DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
@@ -38,12 +38,11 @@ class LocalNotifications {
             (int id, String? title, String? body, String? payload) async {});
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    var initilized = await flutterLocalNotificationsPlugin.initialize(
-        initializationSettings, onSelectNotification: (String? payload) async {
-      if (payload != null) {
-        debugPrint('notification payload: $payload');
-        log('<<<<<<<<<<<<<<<message>>>>>>>>>>>>>>>');
-      }
+    var initilized = await flutterLocalNotificationsPlugin
+        .initialize(initializationSettings, onDidReceiveNotificationResponse:
+            (NotificationResponse notificationResponse) async {
+      debugPrint('notification notificationResponse: $notificationResponse');
+      log('<<<<<<<<<<<<<<<message>>>>>>>>>>>>>>>');
     });
     log('intaialzed $initilized');
   }
@@ -58,12 +57,12 @@ class LocalNotifications {
       'wakeupme channel',
       channelDescription: 'Channel for Alarm Notification',
       icon: 'alarm_icon',
-      sound: RawResourceAndroidNotificationSound('new_alarm_tone'),
+      sound: RawResourceAndroidNotificationSound('alarm_tone'),
       largeIcon: DrawableResourceAndroidBitmap('alarm_icon'),
     );
 
-    var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
-      sound: 'new_alarm_tone.wav',
+    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails(
+      sound: 'alarm_tone.wav',
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -92,12 +91,14 @@ class LocalNotifications {
       'wakeupme channel',
       channelDescription: 'Channel for Alarm Notification',
       icon: 'alarm_icon',
-      sound: RawResourceAndroidNotificationSound('new_alarm_tone'),
+      sound: RawResourceAndroidNotificationSound('alarm_tone'),
       largeIcon: DrawableResourceAndroidBitmap('alarm_icon'),
+      priority: Priority.max,
+      importance: Importance.max,
     );
 
-    var iOSPlatformChannelSpecifics = const IOSNotificationDetails(
-      sound: 'new_alarm_tone.wav',
+    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails(
+      sound: 'alarm_tone.wav',
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -114,7 +115,7 @@ class LocalNotifications {
       tz.TZDateTime.now(tz.local)
           .add(scheduledNotificationDateTime.difference(DateTime.now())),
       platformChannelSpecifics,
-      androidAllowWhileIdle: true,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
