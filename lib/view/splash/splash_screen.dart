@@ -62,11 +62,6 @@ class _SplashScreenState extends State<SplashScreen> {
       const Duration(seconds: 3),
     );
     alarmController.getDbInitialized();
-    // ignore: use_build_context_synchronously
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(),
-        ));
+    Get.off(() => HomeScreen());
   }
 }
